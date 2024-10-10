@@ -14,6 +14,9 @@ import Notification from "./pages/notification/index.jsx";
 import Settings from "./pages/settings/index.jsx";
 import NavigationSideBar from "./pages/NavigationBar/index.jsx";
 import NotFound404 from "./pages/404NotFound/404.jsx";
+import Modal from "react-modal";
+
+// Set the app element
 
 function App() {
   const router = createBrowserRouter(
@@ -31,6 +34,7 @@ function App() {
       </Route>
     )
   );
+  Modal.setAppElement("#root");
 
   return (
     <>

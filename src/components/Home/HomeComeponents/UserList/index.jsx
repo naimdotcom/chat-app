@@ -18,6 +18,8 @@ import { getAuth } from "firebase/auth";
 import { GetTimeNow } from "../../../../Utils/moment";
 import { IoPersonAddOutline } from "react-icons/io5";
 import { MdOutlineCancel } from "react-icons/md";
+import joinTheUid from "../../../../Utils/joinUID";
+import { DB } from "../../../../FirebaseConfig/FireBaseDBConnection";
 
 function UserList() {
   const auth = getAuth();
@@ -85,10 +87,7 @@ function UserList() {
 
         snapshot.forEach((item) => {
           if (item.val().uid !== auth.currentUser.uid) {
-            const uidJoin =
-              auth.currentUser.uid < item.val().uid
-                ? `${auth.currentUser.uid}_${item.val().uid}`
-                : `${item.val().uid}_${auth.currentUser.uid}`;
+            const uidJoin = joinTheUid(auth.currentUser.uid, item.val().uid);
             const blockListRef = ref(db, `block/${uidJoin}`);
             const friendListRef = ref(
               db,
@@ -114,11 +113,11 @@ function UserList() {
     };
 
     fetchUsers();
+  }, [DB, auth?.currentUser, friendReqList]);
 
-    return () => {
-      // Clean up if necessary
-    };
-  }, []);
+  console.log("====================================");
+  console.log(users);
+  console.log("====================================");
 
   return (
     <div className="shadow-lg py-4 px-5 rounded-lg 2xl:w-full  scrollbar-thumb-cs-purple/80 scrollbar-track-cs-purple/40 scrollbar-thumb-r font-poppins">
@@ -152,7 +151,7 @@ function UserList() {
                       {item.username}
                     </h3>
                     <p className="text-sm text-[#4D4D4D]/75 font-medium font-poppins xl:text-xs">
-                      Hi Guys, Wassup!
+                      {item.status}
                     </p>
                   </div>
                 </div>

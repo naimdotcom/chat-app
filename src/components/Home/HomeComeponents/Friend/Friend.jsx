@@ -20,7 +20,7 @@ import { ErrorToast, SuccesfullToast } from "../../../../Utils/toast";
 import { GetTimeNow } from "../../../../Utils/moment";
 import { ImBlocked } from "react-icons/im";
 
-function Friend() {
+function Friend({ CsClassName, friendCompo = false }) {
   const auth = getAuth();
   const db = getDatabase();
   const [friendList, setFriendList] = useState([]);
@@ -80,16 +80,20 @@ function Friend() {
       equalTo(auth.currentUser.uid)
     );
 
-    onValue(friendQuery, (snapShot) => {
+    const unsubscribeFriendQuery = onValue(friendQuery, (snapShot) => {
       let friendBlankList = [];
+
+      // Iterate through each friend item
       snapShot.forEach((item) => {
         const fetchUserQuery = query(
           ref(db, "users/"),
           orderByChild("uid"),
           equalTo(item.val().uid2)
         );
-        get(fetchUserQuery).then((snapShot) => {
-          snapShot.forEach((user) => {
+
+        // Set up an `onValue` listener to get real-time updates for each friend
+        const unsubscribeUserQuery = onValue(fetchUserQuery, (userSnapshot) => {
+          userSnapshot.forEach((user) => {
             friendBlankList.push({
               ...friendList,
               ...user.val(),
@@ -99,15 +103,26 @@ function Friend() {
               createdAt: item.val().createdAt,
             });
           });
+
+          // After updating the friendBlankList with each user, update the state
+          setFriendList([...friendBlankList]);
         });
       });
-      setFriendList(friendBlankList);
     });
+
+    // Cleanup both listeners when the component unmounts
+    return () => {
+      unsubscribeFriendQuery();
+    }; // Unsubscribe from friends query​⬤
   }, []);
 
   return (
     <>
-      <div className="shadow-lg py-4 px-5 rounded-lg 2xl:w-full  scrollbar-thumb-cs-purple/80 scrollbar-track-cs-purple/40 scrollbar-thumb-r font-poppins">
+      <div
+        className={`shadow-lg py-4 px-5 rounded-lg 2xl:w-full  scrollbar-thumb-cs-purple/80 scrollbar-track-cs-purple/40 scrollbar-thumb-r font-poppins ${CsClassName}  ${
+          friendCompo ? "min-h-[360px]" : "min-h-[400px]"
+        }`}
+      >
         <div className="flex justify-between pb-4">
           <p className="text-xl font-semibold relative">
             <span>Friend</span>
@@ -146,38 +161,46 @@ function Friend() {
                       </p>
                     </div>
                   </div>
-                  <div className="relative ">
-                    <button
-                      className="text-cs-purple cursor-pointer font-bold 2xl:text-3xl font-poppins text-3xl"
-                      onClick={() =>
-                        setActivePopupIndex(activePopupIndex === i ? null : i)
-                      }
-                    >
-                      <CiSquareMore />
-                    </button>
-                    <div
-                      className={`bg-white shadow-xl rounded-xl absolute duration-300 ${
-                        activePopupIndex === i
-                          ? "-top-2 right-8 scale-100"
-                          : "scale-0  -top-6 -right-9"
-                      }`}
-                    >
-                      <div
-                        className=" hover:bg-cs-purple hover:text-white w-full px-3 py-1 rounded-tl-xl rounded-tr-xl duration-200 text-sm"
-                        onClick={() => handleUnfriend(item)}
+                  {friendCompo ? (
+                    <div className="relative ">
+                      <button className="bg-cs-purple px-5 py-2 rounded-xl text-white  font-semibold font-poppins ">
+                        join
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="relative ">
+                      <button
+                        className="text-cs-purple cursor-pointer font-bold 2xl:text-3xl font-poppins text-3xl"
+                        onClick={() =>
+                          setActivePopupIndex(activePopupIndex === i ? null : i)
+                        }
                       >
-                        Unfriend
-                      </div>
-                      <hr />
+                        <CiSquareMore />
+                      </button>
                       <div
-                        className=" hover:bg-cs-purple hover:text-white w-full flex items-center gap-1  px-3 py-1 rounded-bl-xl rounded-br-xl duration-200 text-sm"
-                        onClick={() => handleBlock(item)}
+                        className={`bg-white shadow-xl rounded-xl absolute duration-300 ${
+                          activePopupIndex === i
+                            ? "-top-2 right-8 scale-100"
+                            : "scale-0  -top-6 -right-9"
+                        }`}
                       >
-                        <ImBlocked />
-                        Block
+                        <div
+                          className=" hover:bg-cs-purple hover:text-white w-full px-3 py-1 rounded-tl-xl rounded-tr-xl duration-200 text-sm"
+                          onClick={() => handleUnfriend(item)}
+                        >
+                          Unfriend
+                        </div>
+                        <hr />
+                        <div
+                          className=" hover:bg-cs-purple hover:text-white w-full flex items-center gap-1  px-3 py-1 rounded-bl-xl rounded-br-xl duration-200 text-sm"
+                          onClick={() => handleBlock(item)}
+                        >
+                          <ImBlocked />
+                          Block
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
                 <hr className="mb-2" key={i + 20} />
               </div>

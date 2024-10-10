@@ -20,20 +20,18 @@ import { CiSquareMore } from "react-icons/ci";
 
 function Block() {
   const auth = getAuth();
+
   const [blockedPersonList, setBlockedPersonList] = useState([]);
   const [activePopupIndex, setActivePopupIndex] = useState(null);
 
   const handleUnblock = (data) => {
-    const uid1 = data.uid1;
-    const uid2 = data.uid2;
-    const blockRef1 = ref(DB, `block/${uid1}_${uid2}`);
-    const blockRef2 = ref(DB, `block/${uid2}_${uid1}`);
+    console.log(data);
 
-    remove(blockRef1)
+    const blockUidJoin = ref(DB, `block/${data.blockKey}`);
+
+    remove(blockUidJoin)
       .then(() => {
-        remove(blockRef2).then(() => {
-          SuccesfullToast("Unblocked Successfully 🎉");
-        });
+        SuccesfullToast("Unblocked Successfully 🎉");
       })
       .catch((err) => {
         console.log(err);
@@ -50,7 +48,6 @@ function Block() {
       onValue(blockedPersonRef, (snapShot) => {
         let blockedBlankList = [];
         snapShot.forEach((item) => {
-          console.log(item.val());
           const fetchUserQuery = query(
             ref(DB, "users/"),
             orderByChild("uid"),

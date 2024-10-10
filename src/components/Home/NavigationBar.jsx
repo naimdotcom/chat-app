@@ -121,7 +121,7 @@ function NavigationBar() {
         <div className="text-white/70  flex flex-col gap-16 ">
           <NavLink to={"/"}>
             <div
-              className={`relative  w-full homebar_bg  ${
+              className={`relative  w-full homebar_bg   ${
                 location.pathname == "/"
                   ? "homebar_bgAfter text-cs-deepBlue before:shadow-2xl before:shadow-black transition-colors duration-300 "
                   : ""
