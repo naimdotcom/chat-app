@@ -16,7 +16,7 @@ function MessaageRight() {
         <MessageBox author={false} />
         <MessageBox author={false} />
         <MessageBox author={false} />
-        <MessageBox author={false} />
+        <MessageBox author={true} />
         <MessageBox author={false} />
         <MessageBox author={true} />
         <MessageBox author={false} />

@@ -10,9 +10,10 @@ import {
 function Notification() {
   const [userInput, setUserInput] = useState(0);
   const count = useSelector((state) => state.counter.value);
+
   const dispatch = useDispatch();
   return (
-    <div className="w-full">
+    <div className="w-full grid items-center">
       <div className="flex flex-col items-center space-y-4 p-6">
         {/* Output */}
         <div className="w-80 h-16 bg-gray-100 flex items-center justify-center text-xl rounded-lg shadow-md">
@@ -29,7 +30,7 @@ function Notification() {
         />
 
         {/* Functions */}
-        <div className="flex space-x-4">
+        <div className="grid grid-cols-4 gap-4">
           <button
             className="w-16 h-16 bg-blue-500 text-white text-2xl rounded-lg shadow-md"
             onClick={() => dispatch(increment(Number(userInput)))}

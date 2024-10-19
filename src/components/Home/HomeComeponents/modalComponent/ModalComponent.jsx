@@ -11,7 +11,6 @@ const customStyles = {
     right: "auto",
     bottom: "auto",
     marginRight: "-50%",
-
     transform: "translate(-50%, -50%)",
     zIndex: "1000",
     padding: "2rem 3rem",
